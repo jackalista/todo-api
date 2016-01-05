@@ -9,6 +9,10 @@ var todos = [{
 	id: 2,
 	description: 'go to whole foods',
 	completed: false
+}, {
+	id: 3,
+	description: 'pick up kids',
+	completed: true
 }];
 
 app.get('/', function (req, res) {
