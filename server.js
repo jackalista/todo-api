@@ -3,7 +3,7 @@ var app = express();
 var PORT = process.env.PORT || 3000;
 var todos = [{
 	id: 1,
-	description: 'go to costco',
+	description: 'go to noahs bagels',
 	completed: false
 }, {
 	id: 2,
