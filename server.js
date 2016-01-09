@@ -21,8 +21,8 @@ app.get('/todos', function (req, res) {
 // GET /todos/:id
 app.get('/todos/:id', function (req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	
 	var foundTodo = _.findWhere(todos, {id: todoId});
+
 	if(foundTodo) {
 		res.json(foundTodo);
 	} else {
@@ -45,6 +45,20 @@ app.post('/todos', function (req, res) {
 	todos.push(body);
 	res.json(body);
 });
+
+// DELETE /todos/:id
+app.delete('/todos/:id', function (req, res) {
+	var todoId = parseInt(req.params.id, 10);
+	var foundTodo = _.findWhere(todos, {id: todoId});
+
+	if(foundTodo) {
+		todos = _.without(todos, foundTodo);
+		res.json(foundTodo);
+	} else {
+		res.status(404).send();
+	}
+});
+
 
 app.listen(PORT, function () {
 	console.log('Express listening on port ' + PORT + '!');
