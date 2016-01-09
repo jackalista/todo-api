@@ -25,9 +25,19 @@ app.get('/todos', function (req, res) {
 });
 
 // GET /todos/:id
-// why doiesn't this work on the server?!?
 app.get('/todos/:id', function (req, res) {
-	res.send('asking for a todo with id: ' + req.params.id);
+	var foundTodo;
+	var todoId = parseInt(req.params.id, 10);
+	todos.forEach(function (todo) {
+		if(todoId === todo.id) {
+			foundTodo = todo;
+		}
+	});
+	if(foundTodo) {
+		res.json(foundTodo);
+	} else {
+		res.status(404).send();
+	}
 });
 
 app.listen(PORT, function () {
