@@ -20,10 +20,9 @@ app.get('/todos', function (req, res) {
 
 // GET /todos/:id
 app.get('/todos/:id', function (req, res) {
-	var foundTodo;
 	var todoId = parseInt(req.params.id, 10);
 	
-	foundTodo = _.findWhere(todos, {id: todoId});
+	var foundTodo = _.findWhere(todos, {id: todoId});
 	if(foundTodo) {
 		res.json(foundTodo);
 	} else {
