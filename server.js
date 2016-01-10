@@ -54,6 +54,7 @@ app.put('/todos/:id', function (req, res) {
 
 	if(foundTodo) {
 		todos = _.without(todos, foundTodo);
+		body.id = todoId;
 		todos.push(body);
 		res.json(body);
 	} else {
