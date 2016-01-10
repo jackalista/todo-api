@@ -46,6 +46,21 @@ app.post('/todos', function (req, res) {
 	res.json(body);
 });
 
+// PUT /todos/:id
+app.put('/todos/:id', function (req, res) {
+	var todoId = parseInt(req.params.id, 10);
+	var foundTodo = _.findWhere(todos, {id: todoId});
+	var body = _.pick(req.body, 'description', 'completed');
+
+	if(foundTodo) {
+		todos = _.without(todos, foundTodo);
+		todos.push(body);
+		res.json(body);
+	} else {
+		res.status(404).json({"error": "no todo found with that id"});
+	}
+});
+
 // DELETE /todos/:id
 app.delete('/todos/:id', function (req, res) {
 	var todoId = parseInt(req.params.id, 10);
