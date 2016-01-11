@@ -37,8 +37,8 @@ app.post('/todos', function (req, res) {
 
 	if (!_.isBoolean(body.completed) || !_.isString(body.description) 
 		|| body.description.trim().length === 0) {
-		return res.status(400).send();
-	} 
+		return res.status(400).json({"error": "invalid data submitted"});
+	}
 	// add id field
 	body.id = todoNextId++;
 	body.description = body.description.trim();
@@ -51,15 +51,36 @@ app.put('/todos/:id', function (req, res) {
 	var todoId = parseInt(req.params.id, 10);
 	var foundTodo = _.findWhere(todos, {id: todoId});
 	var body = _.pick(req.body, 'description', 'completed');
+	var validAttributes = {};
 
-	if(foundTodo) {
-		todos = _.without(todos, foundTodo);
-		body.id = todoId;
-		todos.push(body);
-		res.json(body);
-	} else {
-		res.status(404).json({"error": "no todo found with that id"});
+	if(!foundTodo) {
+		return res.status(404).json({"error": "no todo found with that id: (" + todoId + ")"});
 	}
+
+	if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+		validAttributes.completed = body.completed;
+	} else if (body.hasOwnProperty('completed')) {
+		return res.status(400).json({"error": "invalid data for completed property"});
+	}
+
+	if (body.hasOwnProperty('description') && _.isString(body.description) &&
+		body.description.trim().length > 0) {
+		validAttributes.description = body.description;
+	} else if (body.hasOwnProperty('description')) {
+		return res.status(400).json({"error": "invalid data for description property"});		
+	}
+
+	_.extend(foundTodo, validAttributes);
+	res.json(foundTodo);
+	
+		// -=j=-: all this stuff is unnecessary as foundTodo is still in the list
+		// and is updated inline so no need to pull the old one off and replace, we
+		// just update the existing object in place in the list (pass by reference)
+		//
+		// todos = _.without(todos, foundTodo);
+		// body.id = todoId;
+		// todos.push(body);
+		// res.json(body);
 });
 
 // DELETE /todos/:id
