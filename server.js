@@ -15,7 +15,22 @@ app.get('/', function (req, res) {
 
 // GET /todos
 app.get('/todos', function (req, res) {
-	res.json(todos);
+	var queryParams = req.query;
+	var filteredTodos = todos;
+	var validAttributes = {};
+
+	// if has property and completed === 'true'
+	if(queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+		validAttributes.completed = true;
+		filteredTodos = _.where(filteredTodos, validAttributes);
+	} else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+		validAttributes.completed = false;
+		filteredTodos = _.where(filteredTodos, validAttributes);
+	} else if (typeof queryParams.completed !== 'undefined' ) {
+		return res.status(400).json({"error": "invalid data submitted"});
+	}
+	
+	res.json(filteredTodos);
 });
 
 // GET /todos/:id
