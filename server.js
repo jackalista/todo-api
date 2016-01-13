@@ -9,42 +9,46 @@ var todoNextId = 1;
 
 app.use(bodyParser.json());
 
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
 	res.send('Todo API Root');
 });
 
 // GET /todos?completed=true&q=kick
-app.get('/todos', function (req, res) {
+app.get('/todos', function(req, res) {
 	var queryParams = req.query;
 	var filteredTodos = todos;
 	var validAttributes = {};
 
 	// if has property and completed === 'true'
-	if(queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+	if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
 		validAttributes.completed = true;
 		filteredTodos = _.where(filteredTodos, validAttributes);
 	} else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
 		validAttributes.completed = false;
 		filteredTodos = _.where(filteredTodos, validAttributes);
-	} else if (typeof queryParams.completed !== 'undefined' ) {
-		return res.status(400).json({"error": "invalid data submitted"});
+	} else if (typeof queryParams.completed !== 'undefined') {
+		return res.status(400).json({
+			"error": "invalid data submitted"
+		});
 	}
 
-	if(queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
-		filteredTodos = _.filter(filteredTodos, function (todo) {
+	if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
+		filteredTodos = _.filter(filteredTodos, function(todo) {
 			return todo.description.toLowerCase().indexOf(queryParams.q) > -1;
 		});
 	}
-	
+
 	res.json(filteredTodos);
 });
 
 // GET /todos/:id
-app.get('/todos/:id', function (req, res) {
+app.get('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var foundTodo = _.findWhere(todos, {id: todoId});
+	var foundTodo = _.findWhere(todos, {
+		id: todoId
+	});
 
-	if(foundTodo) {
+	if (foundTodo) {
 		res.json(foundTodo);
 	} else {
 		res.status(404).send();
@@ -52,13 +56,14 @@ app.get('/todos/:id', function (req, res) {
 });
 
 // POST /todos
-app.post('/todos', function (req, res) {
+app.post('/todos', function(req, res) {
 	// list valid fields we want to keep
 	var body = _.pick(req.body, 'description', 'completed');
 
-	if (!_.isBoolean(body.completed) || !_.isString(body.description) 
-		|| body.description.trim().length === 0) {
-		return res.status(400).json({"error": "invalid data submitted"});
+	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+		return res.status(400).json({
+			"error": "invalid data submitted"
+		});
 	}
 	// add id field
 	body.id = todoNextId++;
@@ -68,56 +73,68 @@ app.post('/todos', function (req, res) {
 });
 
 // PUT /todos/:id
-app.put('/todos/:id', function (req, res) {
+app.put('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var foundTodo = _.findWhere(todos, {id: todoId});
+	var foundTodo = _.findWhere(todos, {
+		id: todoId
+	});
 	var body = _.pick(req.body, 'description', 'completed');
 	var validAttributes = {};
 
-	if(!foundTodo) {
-		return res.status(404).json({"error": "no todo found with that id: (" + todoId + ")"});
+	if (!foundTodo) {
+		return res.status(404).json({
+			"error": "no todo found with that id: (" + todoId + ")"
+		});
 	}
 
 	if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
 		validAttributes.completed = body.completed;
 	} else if (body.hasOwnProperty('completed')) {
-		return res.status(400).json({"error": "invalid data for completed property"});
+		return res.status(400).json({
+			"error": "invalid data for completed property"
+		});
 	}
 
 	if (body.hasOwnProperty('description') && _.isString(body.description) &&
 		body.description.trim().length > 0) {
 		validAttributes.description = body.description;
 	} else if (body.hasOwnProperty('description')) {
-		return res.status(400).json({"error": "invalid data for description property"});		
+		return res.status(400).json({
+			"error": "invalid data for description property"
+		});
 	}
 
 	_.extend(foundTodo, validAttributes);
 	res.json(foundTodo);
-	
-		// -=j=-: all this stuff is unnecessary as foundTodo is still in the list
-		// and is updated inline so no need to pull the old one off and replace, we
-		// just update the existing object in place in the list (pass by reference)
-		//
-		// todos = _.without(todos, foundTodo);
-		// body.id = todoId;
-		// todos.push(body);
-		// res.json(body);
+
+	// -=j=-: all this stuff is unnecessary as foundTodo is still in the list
+	// and is updated inline so no need to pull the old one off and replace, we
+	// just update the existing object in place in the list (pass by reference)
+	//
+	// todos = _.without(todos, foundTodo);
+	// body.id = todoId;
+	// todos.push(body);
+	// res.json(body);
 });
 
 // DELETE /todos/:id
-app.delete('/todos/:id', function (req, res) {
+app.delete('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var foundTodo = _.findWhere(todos, {id: todoId});
+	var foundTodo = _.findWhere(todos, {
+		id: todoId
+	});
 
-	if(foundTodo) {
+	if (foundTodo) {
 		todos = _.without(todos, foundTodo);
 		res.json(foundTodo);
 	} else {
-		res.status(404).json({"error": "no todo found with that id"});
+		res.status(404).json({
+			"error": "no todo found with that id"
+		});
 	}
 });
 
 
-app.listen(PORT, function () {
+app.listen(PORT, function() {
 	console.log('Express listening on port ' + PORT + '!');
 });
