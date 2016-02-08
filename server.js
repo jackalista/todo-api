@@ -44,15 +44,15 @@ app.get('/todos', function(req, res) {
 // GET /todos/:id
 app.get('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var foundTodo = _.findWhere(todos, {
-		id: todoId
+	db.todo.findById(todoId).then(function (todo) {
+		if (!!todo) {
+			res.json(todo.toJSON());
+		} else {
+			res.status(404).send();
+		}
+	}, function (e) {
+		res.status(500).json(e);
 	});
-
-	if (foundTodo) {
-		res.json(foundTodo);
-	} else {
-		res.status(404).send();
-	}
 });
 
 // POST /todos
@@ -60,12 +60,10 @@ app.post('/todos', function(req, res) {
 	// list valid fields we want to keep
 	var body = _.pick(req.body, 'description', 'completed');
 
-	// call create on db.todo
-	//   respond with 200 & todo
-	//   res.status.(400).json(e)
-	db.todo.create(body).then(function (todo) {
+	body.description = body.description.trim();
+	db.todo.create(body).then(function(todo) {
 		res.json(todo.toJSON());
-	}, function (e) {
+	}, function(e) {
 		res.status(400).json(e);
 	});
 });
