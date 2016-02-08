@@ -15,30 +15,26 @@ app.get('/', function(req, res) {
 
 // GET /todos?completed=true&q=kick
 app.get('/todos', function(req, res) {
-	var queryParams = req.query;
-	var filteredTodos = todos;
-	var validAttributes = {};
+	var query = req.query;
+	var where= {};
 
-	// if has property and completed === 'true'
-	if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
-		validAttributes.completed = true;
-		filteredTodos = _.where(filteredTodos, validAttributes);
-	} else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
-		validAttributes.completed = false;
-		filteredTodos = _.where(filteredTodos, validAttributes);
-	} else if (typeof queryParams.completed !== 'undefined') {
-		return res.status(400).json({
-			"error": "invalid data submitted"
-		});
+	if (query.hasOwnProperty('completed') && query.completed === 'true') {
+		where.completed = true;
+	} else if (query.hasOwnProperty('completed') && query.completed === 'false') {
+		where.completed = false;
 	}
 
-	if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
-		filteredTodos = _.filter(filteredTodos, function(todo) {
-			return todo.description.toLowerCase().indexOf(queryParams.q) > -1;
-		});
+	if (query.hasOwnProperty('q') && query.q.length > 0) {
+		where.description = {
+			$like: '%' + query.q.toLowerCase() + '%'
+		};
 	}
 
-	res.json(filteredTodos);
+	db.todo.findAll({where: where}).then(function (todos) {
+		res.json(todos);
+	}, function (e) {
+		res.status(500).json(e);
+	});
 });
 
 // GET /todos/:id
@@ -102,15 +98,6 @@ app.put('/todos/:id', function(req, res) {
 
 	_.extend(foundTodo, validAttributes);
 	res.json(foundTodo);
-
-	// -=j=-: all this stuff is unnecessary as foundTodo is still in the list
-	// and is updated inline so no need to pull the old one off and replace, we
-	// just update the existing object in place in the list (pass by reference)
-	//
-	// todos = _.without(todos, foundTodo);
-	// body.id = todoId;
-	// todos.push(body);
-	// res.json(body);
 });
 
 // DELETE /todos/:id

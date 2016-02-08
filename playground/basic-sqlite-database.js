@@ -62,3 +62,42 @@ sequelize.sync({
 		console.log(e);
 	});
 });
+
+// -=j=-: stuff chopped out of the GET /todos&completed=[true|false]&q=[search terms]
+
+	// var filteredTodos = todos;
+	// var validAttributes = {};
+
+	// // if has property and completed === 'true'
+	// if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+	// 	validAttributes.completed = true;
+	// 	filteredTodos = _.where(filteredTodos, validAttributes);
+	// } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+	// 	validAttributes.completed = false;
+	// 	filteredTodos = _.where(filteredTodos, validAttributes);
+	// } else if (typeof queryParams.completed !== 'undefined') {
+	// 	return res.status(400).json({
+	// 		"error": "invalid data submitted"
+	// 	});
+	// }
+
+	// if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
+	// 	filteredTodos = _.filter(filteredTodos, function(todo) {
+	// 		return todo.description.toLowerCase().indexOf(queryParams.q) > -1;
+	// 	});
+	// }
+
+	// res.json(filteredTodos);
+
+// some further scrap from the PUT /todos/:id call from before I realized I didn't need to
+// exlpicitly pop and item off the array and replace it but could modify the existing item 
+// while still in the array
+
+	// -=j=-: all this stuff is unnecessary as foundTodo is still in the list
+	// and is updated inline so no need to pull the old one off and replace, we
+	// just update the existing object in place in the list (pass by reference)
+	//
+	// todos = _.without(todos, foundTodo);
+	// body.id = todoId;
+	// todos.push(body);
+	// res.json(body);
