@@ -10,7 +10,7 @@ var todos = todoNextId = 1;
 
 app.use(bodyParser.json());
 
-//app.use(cors());
+app.use(cors());
 
 app.get('/', function(req, res) {
 	res.send('Todo API Root');
@@ -35,9 +35,9 @@ app.get('/todos', function(req, res) {
 
 	db.todo.findAll({
 		where: where
-	}).then(function(todos) {
+	}).then(function (todos) {
 		res.json(todos);
-	}, function(e) {
+	}, function (e) {
 		res.status(500).json(e);
 	});
 });
